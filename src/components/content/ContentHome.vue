@@ -2,7 +2,8 @@
   <div :class="b()">
     <template v-if="selectedFavoriteType">
       <ChannelsList v-if="isChannel" :items="filteredItems" :columns="columns" />
-      <FeedsList v-else :items="filteredItems" :columns="columns" />
+      <FeedsList v-else-if="isFeed" :items="filteredItems" :columns="columns" />
+      <VideosList v-else :items="filteredItems" :columns="columns" />
       <b-pagination
         :class="b('pagination')"
         v-if="items.length > itemsPerPage"
@@ -17,15 +18,16 @@
 <script>
 import ChannelsList from '../channels/ChannelsList'
 import FeedsList from '../feeds/FeedsList'
+import VideosList from '../videos/VideosList'
 import { mapState } from 'vuex'
 
 export default {
   name: 'content-home',
-  components: { ChannelsList, FeedsList },
+  components: { ChannelsList, FeedsList, VideosList },
   data: () => ({
     columns: 3,
     currentPage: 1,
-    itemsPerPage: 12
+    itemsPerPage: 9
   }),
   computed: {
     ...mapState([
@@ -39,6 +41,7 @@ export default {
     items () {
       if (this.isChannel) return this.selectedFavorite.channel.items
       if (this.isFeed) return this.selectedFavorite.feed.data.items
+      if (this.isVideo) return this.selectedFavorite.video.items
       return []
     },
     isChannel () {
@@ -46,6 +49,9 @@ export default {
     },
     isFeed () {
       return this.selectedFavoriteType === 'feed'
+    },
+    isVideo () {
+      return this.selectedFavoriteType === 'video'
     }
   },
   watch: {

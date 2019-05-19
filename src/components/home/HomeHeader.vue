@@ -26,9 +26,9 @@ export default {
 <style lang="scss" scoped>
 .home-header {
   align-items: center;
-  background: #f9f9f9;
+  background: #fff;
   border-bottom: 1px solid #ccc;
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.08);
   display: flex;
   height: $home-header-height;
   justify-content: flex-end;

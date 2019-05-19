@@ -1,11 +1,11 @@
 <template>
   <div :class="b()" v-if="isHome">
-    <div :class="b('search')">
+    <!-- <div :class="b('search')">
       <b-form-input placeholder="Поиск..." type="text" />
-    </div>
+    </div> -->
     <div :class="b('favorites')">
       <div
-        :class="b('favorite', modificator(favoriteChannel))"
+        :class="b('favorite', modificator(favoriteChannel, 'channel'))"
         v-for="favoriteChannel in favoriteChannels"
         :key="favoriteChannel.id"
         @click="selectFavorite(favoriteChannel, 'channel')">
@@ -15,13 +15,22 @@
         <div :class="b('remove')" @click.stop="removeChannel(favoriteChannel.channel_id)">close</div>
       </div>
       <div
-        :class="b('favorite', modificator(favoriteFeed))"
+        :class="b('favorite', modificator(favoriteFeed, 'feed'))"
         v-for="favoriteFeed in favoriteFeeds"
         :key="favoriteFeed.id"
         @click="selectFavorite(favoriteFeed, 'feed')">
         <div :class="b('icon')">rss_feed</div>
         <div :class="b('title')">{{ favoriteFeed.feed.title }}</div>
         <div :class="b('remove')" @click.stop="removeFeed(favoriteFeed.feed_id)">close</div>
+      </div>
+      <div
+        :class="b('favorite', modificator(favoriteVideo, 'video'))"
+        v-for="favoriteVideo in favoriteVideos"
+        :key="favoriteVideo.id"
+        @click="selectFavorite(favoriteVideo, 'video')">
+        <div :class="b('icon')">videocam</div>
+        <div :class="b('title')">{{ favoriteVideo.video.name }}</div>
+        <div :class="b('remove')" @click.stop="removeVideo(favoriteVideo.video_id)">close</div>
       </div>
       <div :class="b('empty')" v-if="!totalLength">Подписок нет</div>
     </div>
@@ -35,7 +44,7 @@ export default {
   name: 'home-menu',
   computed: {
     ...mapState([
-      'channels', 'feeds', 'selectedFavorite'
+      'channels', 'feeds', 'selectedFavorite', 'selectedFavoriteType', 'videos'
     ]),
     favoriteChannels () {
       return this.$store.getters.favoriteChannels.map(favoriteChannel => {
@@ -49,25 +58,34 @@ export default {
         return { ...favoriteFeed, feed }
       })
     },
+    favoriteVideos () {
+      return this.$store.getters.favoriteVideos.map(favoriteVideo => {
+        const video = this.videos.find(video => video.id == favoriteVideo.video_id)
+        return { ...favoriteVideo, video }
+      })
+    },
     isHome () {
       return this.$route.name === 'content:home'
     },
     totalLength () {
-      return this.favoriteChannels.length + this.favoriteFeeds.length
+      return this.favoriteChannels.length + this.favoriteFeeds.length + this.favoriteVideos.length
     }
   },
   methods: {
-    isSelected (favorite) {
-      return this.selectedFavorite.id === favorite.id
+    isSelected (favorite, type) {
+      return this.selectedFavorite.id === favorite.id && this.selectedFavoriteType === type
     },
-    modificator (favorite) {
-      return { selected: this.isSelected(favorite) }
+    modificator (favorite, type) {
+      return { selected: this.isSelected(favorite, type) }
     },
     removeChannel (id) {
       this.$store.dispatch('removeFavoriteChannel', id)
     },
     removeFeed (id) {
       this.$store.dispatch('removeFavoriteFeed', id)
+    },
+    removeVideo (id) {
+      this.$store.dispatch('removeFavoriteVideo', id)
     },
     openPlayerModal (favorite) {
       this.$store.commit('SET_MODAL', { name: 'modal-player', favorite })
@@ -101,7 +119,7 @@ export default {
 
   &__favorites {
     flex: 1;
-    margin: 0 10px 0 10px;
+    padding: 10px;
   }
 
   &__favorite {

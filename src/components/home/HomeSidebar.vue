@@ -30,6 +30,11 @@ export default {
       route: 'content:feeds',
       icon: 'rss_feed',
       title: 'RSS'
+    }, {
+      id: 4,
+      route: 'content:videos',
+      icon: 'videocam',
+      title: 'VK'
     }],
     selected: null
   }),

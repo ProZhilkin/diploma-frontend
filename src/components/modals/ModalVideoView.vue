@@ -5,16 +5,14 @@
     content-class="custom-modal-content"
     hide-header
     hide-footer
+    size="lg"
     :visible="visible"
     @hide="hide">
     <div :class="b()">
-      <a :href="item.link">
-        <img :class="b('image')" :src="thumbnailUrl">
-      </a>
+      <iframe :class="b('video')" :src="item.player" />
       <div :class="b('content')">
-        <div :class="b('title')">{{ item.title }}</div>
-        <div :class="b('date')">Опубликовано: {{ date }}</div>
-        <div :class="b('text')" v-html="item.content"></div>
+        <div :class="b('title')" v-html="item.title"></div>
+        <div :class="b('description')" v-html="item.description"></div>
       </div>
     </div>
   </b-modal>
@@ -24,20 +22,16 @@
 import moment from 'moment'
 
 export default {
-  name: 'modal-feed-view',
+  name: 'modal-video-view',
   computed: {
     date () {
-      return moment(this.item.pubDate).format('YYYY-MM-DD HH:mm')
+      return moment(this.item.date * 1000).format('YYYY-MM-DD HH:mm')
     },
     item () {
       return this.modal.item || {}
     },
     modal () {
       return this.$store.getters.modal
-    },
-    thumbnailUrl () {
-      if (this.item.enclosure) return this.item.enclosure.url
-      return require('@/assets/images/no-preview.jpg')
     },
     visible () {
       return this.$options.name === this.modal.name
@@ -52,23 +46,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-feed-view {
-  &__content {
-    padding: 20px;
-  }
-
-  &__image {
+.modal-video-view {
+  &__video {
+    border: 0;
+    height: 400px;
     width: 100%;
   }
 
-  &__title {
-    font-size: 1.5em;
-    font-weight: 550;
-    margin-bottom: 5px;
+  &__content {
+    padding: 5px 20px 20px 20px;
   }
 
-  &__date {
-    font-style: italic;
+  &__title {
+    font-size: 1.3em;
+    font-weight: 550;
     margin-bottom: 10px;
   }
 }

@@ -6,7 +6,7 @@ export default class {
   }
 
   static removeChannel (channelId) {
-    return ApiService.instance.delete('/favorite/channel', { 
+    return ApiService.instance.delete('/favorite/channel', {
       data: { channel_id: channelId }
     })
   }
@@ -27,5 +27,19 @@ export default class {
 
   static getFeeds () {
     return ApiService.instance.get('/favorite/feeds')
+  }
+
+  static addVideo (videoId) {
+    return ApiService.instance.post('/favorite/video', { video_id: videoId })
+  }
+
+  static removeVideo (videoId) {
+    return ApiService.instance.delete('/favorite/video', {
+      data: { video_id: videoId }
+    })
+  }
+
+  static getVideos () {
+    return ApiService.instance.get('/favorite/videos')
   }
 }

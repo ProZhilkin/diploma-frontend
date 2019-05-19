@@ -1,6 +1,6 @@
 <template>
-  <div :class="b()" @click="openFeedViewModal">
-    <img :class="b('thumbnail')" :src="thumbnailUrl">
+  <div :class="b()" @click="openVideoViewModal">
+    <img :class="b('thumbnail')" :src="item.image_medium">
     <div :class="b('content')">
       <div :class="b('title')">{{ item.title }}</div>
       <div :class="b('text')" v-html="content"></div>
@@ -14,7 +14,7 @@ import moment from 'moment'
 import smartTruncate from 'smart-truncate'
 
 export default {
-  name: 'feeds-item',
+  name: 'videos-item',
   props: {
     item: { required: true, type: Object }
   },
@@ -23,26 +23,22 @@ export default {
   }),
   computed: {
     content () {
-      return smartTruncate(this.item.content, this.maxContentLength)
+      return smartTruncate(this.item.description, this.maxContentLength)
     },
     date () {
-      return moment(this.item.pubDate).format('YYYY-MM-DD HH:mm')
-    },
-    thumbnailUrl () {
-      if (this.item.enclosure) return this.item.enclosure.url
-      return require('@/assets/images/no-preview.jpg')
+      return moment(this.item.date * 1000).format('YYYY-MM-DD HH:mm')
     }
   },
   methods: {
-    openFeedViewModal () {
-      this.$store.commit('SET_MODAL', { name: 'modal-feed-view', item: this.item })
+    openVideoViewModal () {
+      this.$store.commit('SET_MODAL', { name: 'modal-video-view', item: this.item })
     }
   }
 }
 </script>
 
 <style lang="scss">
-.feeds-item {
+.videos-item {
   background: #fff;
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -50,9 +46,9 @@ export default {
   flex-direction: column;
 
   &__thumbnail {
-    background: #E9E9E9;
+    background: #eee;
     border-bottom: 1px solid #ccc;
-    object-fit: contain;
+    object-fit: cover;
     height: 200px;
     width: 100%;
   }
@@ -75,7 +71,6 @@ export default {
 
   &__date {
     font-size: 0.9em;
-    font-weight: 600;
     text-align: right;
     margin-top: 10px;
   }

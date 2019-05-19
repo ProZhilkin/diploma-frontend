@@ -2,6 +2,7 @@
   <div :class="b()">
     <ModalChannelView />
     <ModalFeedView />
+    <ModalVideoView />
     <ModalAddItem />
     <ModalPlayer />
   </div>
@@ -10,6 +11,7 @@
 <script>
 import ModalChannelView from '../modals/ModalChannelView'
 import ModalFeedView from '../modals/ModalFeedView'
+import ModalVideoView from '../modals/ModalVideoView'
 import ModalAddItem from '../modals/ModalAddItem'
 import ModalPlayer from '../modals/ModalPlayer'
 
@@ -18,6 +20,7 @@ export default {
   components: {
     ModalChannelView,
     ModalFeedView,
+    ModalVideoView,
     ModalAddItem,
     ModalPlayer
   }

@@ -28,7 +28,7 @@ export default {
 
 <style lang="scss" scoped>
 .home-content {
-  background: #eee;
+  background: #F5F5F5;
   display: flex;
   flex: 1;
   flex-direction: column;

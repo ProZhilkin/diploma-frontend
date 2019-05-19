@@ -1,67 +1,67 @@
 <template>
   <div :class="b()">
-    <div :class="b('feeds')">
-      <div :class="b('feed')" v-for="(feed, index) in feeds" :key="index">
+    <div :class="b('videos')">
+      <div :class="b('video')" v-for="(video, index) in videos" :key="index">
         <div :class="b('header')">
-          <span :class="b('title')">{{ feed.title }}</span>
-          <b-button variant="primary" size="sm" v-if="!isAdded(feed.id)" @click="addFavoriteFeed(feed.id)">
+          <span :class="b('title')">{{ video.name }}</span>
+          <b-button variant="primary" size="sm" v-if="!isAdded(video.id)" @click="addFavoriteVideo(video.id)">
             <div :class="b('button-content')">
               <i :class="b('button-icon')">add</i>
               ПОДПИСАТЬСЯ
             </div>
           </b-button>
-          <b-button variant="danger" size="sm" v-else @click="removeFavoriteFeed(feed.id)">
+          <b-button variant="danger" size="sm" v-else @click="removeFavoriteVideo(video.id)">
             <div :class="b('button-content')">
               <i :class="b('button-icon')">close</i>
               УДАЛИТЬ
             </div>
           </b-button>
         </div>
-        <FeedsList :items="getItems(feed)" :limit="4" :columns="4" />
+        <VideosList :items="getItems(video)" :limit="4" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import FeedsList from '../feeds/FeedsList'
+import VideosList from '../videos/VideosList'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'content-feeds',
-  components: { FeedsList },
+  name: 'content-videos',
+  components: { VideosList },
   computed: {
     ...mapState([
-      'feeds'
+      'videos'
     ]),
-    favoriteFeeds () {
-      return this.$store.getters.favoriteFeeds
+    favoriteVideos () {
+      return this.$store.getters.favoriteVideos
     }
   },
   methods: {
-    getItems (feed) {
-      return feed.data.items ? feed.data.items : []
+    getItems (video) {
+      return video.items ? video.items : []
     },
-    addFavoriteFeed (id) {
-      this.$store.dispatch('addFavoriteFeed', id)
+    addFavoriteVideo (id) {
+      this.$store.dispatch('addFavoriteVideo', id)
     },
-    removeFavoriteFeed (id) {
-      this.$store.dispatch('removeFavoriteFeed', id)
+    removeFavoriteVideo (id) {
+      this.$store.dispatch('removeFavoriteVideo', id)
     },
     isAdded (id) {
-      const feeds = this.favoriteFeeds.filter(feed => feed.feed_id === id)
-      return Boolean(feeds.length)
+      const videos = this.favoriteVideos.filter(video => video.video_id === id)
+      return Boolean(videos.length)
     }
   }
 }
 </script>
 
 <style lang="scss">
-.content-feeds {
+.content-videos {
   flex: 1;
   margin: 20px;
 
-  &__feed {
+  &__video {
     margin-bottom: 30px;
   }
 

@@ -7,7 +7,8 @@ export default {
   REMOVE_SELECTED_FAVORITE (state, id) {
     const isChannel = state.selectedFavoriteType === 'channel' && state.selectedFavorite.channel_id === id
     const isFeed = state.selectedFavoriteType === 'feed' && state.selectedFavorite.feed_id === id
-    if (isChannel || isFeed) {
+    const isVideo = state.selectedFavoriteType === 'video' && state.selectedFavorite.video_id === id
+    if (isChannel || isFeed || isVideo) {
       state.selectedFavorite = {}
       state.selectedFavoriteType = ''
     }
@@ -30,6 +31,9 @@ export default {
   SET_FAVORITE_FEEDS (state, feeds) {
     Vue.set(state.favorite, 'feeds', feeds)
   },
+  SET_FAVORITE_VIDEOS (state, videos) {
+    Vue.set(state.favorite, 'videos', videos)
+  },
   SET_FEEDS (state, feeds) {
     state.feeds = feeds.map(feed => {
       return { ...feed, data: {} }
@@ -40,6 +44,9 @@ export default {
   },
   SET_TOKEN (state, token) {
     state.token = token
+  },
+  SET_VIDEOS (state, videos) {
+    state.videos = videos
   },
   SET_USER (state, user) {
     state.user = user
@@ -55,6 +62,11 @@ export default {
   UPDATE_FEED (state, { id, data }) {
     state.feeds.forEach(feed => {
       if (feed.id === id) feed.data = data
+    })
+  },
+  UPDATE_VIDEO (state, { id, items }) {
+    state.videos.forEach(video => {
+      if (video.id === id) Vue.set(video, 'items', items)
     })
   }
 }

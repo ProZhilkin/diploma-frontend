@@ -10,6 +10,7 @@
 import HomeSidebar from '@/components/home/HomeSidebar'
 import HomeMenu from '@/components/home/HomeMenu'
 import HomeContent from '@/components/home/HomeContent'
+import VkApi from '@/api/vk'
 import Youtube from 'simple-youtube-api'
 import { mapState } from 'vuex'
 
@@ -22,7 +23,7 @@ export default {
   }),
   computed: {
     ...mapState([
-      'apiKey', 'channels', 'feeds'
+      'youtubeApiKey', 'vkApiKey', 'channels', 'feeds', 'videos'
     ])
   },
   watch: {
@@ -38,14 +39,24 @@ export default {
       this.feeds.forEach(async (feed) => {
         await this.$store.dispatch('getFeedByUrl', { id: feed.id, url: feed.url })
       })
+    },
+    videos () {
+      this.videos.forEach(async (video) => {
+        const params = { access_token: this.vkApiKey, owner_id: video.owner_id, v: 'V' }
+        const { data } = await VkApi.getVideos(params)
+        const items = data.response.filter(item => typeof item === 'object')
+        this.$store.commit('UPDATE_VIDEO', { id: video.id, items: items })
+      })
     }
   },
   async created () {
-    this.youtube = new Youtube(this.apiKey)
+    this.youtube = new Youtube(this.youtubeApiKey)
     await this.$store.dispatch('getChannels')
     await this.$store.dispatch('getFeeds')
+    await this.$store.dispatch('getVideos')
     await this.$store.dispatch('getFavoriteChannels')
     await this.$store.dispatch('getFavoriteFeeds')
+    await this.$store.dispatch('getFavoriteVideos')
   }
 }
 </script>

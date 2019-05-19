@@ -1,5 +1,5 @@
-import TokenService from './token'
 import axios from 'axios'
+import TokenService from './token'
 
 export default class ApiService {
   static get baseURL () {

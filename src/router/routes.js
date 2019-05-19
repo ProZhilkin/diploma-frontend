@@ -5,6 +5,7 @@ import Login from '@/views/Login'
 import ContentHome from '@/components/content/ContentHome'
 import ContentChannels from '@/components/content/ContentChannels'
 import ContentFeeds from '@/components/content/ContentFeeds'
+import ContentVideos from '@/components/content/ContentVideos'
 
 export default [{
   beforeEnter: Hooks.ifAuthenticated,
@@ -26,6 +27,11 @@ export default [{
     component: ContentFeeds,
     name: 'content:feeds',
     path: 'feeds'
+  }, {
+    beforeEnter: Hooks.ifAuthenticated,
+    component: ContentVideos,
+    name: 'content:videos',
+    path: 'videos'
   }]
 }, {
   beforeEnter: Hooks.ifNotAuthenticated,
