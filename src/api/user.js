@@ -1,19 +1,19 @@
-import ApiSerivce from '@/services/api'
+import ApiService from '@/services/api'
 
 export default class {
   static login (user) {
-    return ApiSerivce.instance.post('/user/login', user)
+    return ApiService.instance.post('/user/login', user)
   }
 
   static register (user) {
-    return ApiSerivce.instance.post('/user/register', user)
+    return ApiService.instance.post('/user/register', user)
   }
 
   static logout () {
-    return ApiSerivce.instance.delete('/user/logout')
+    return ApiService.instance.delete('/user/logout')
   }
 
   static getUser () {
-    return ApiSerivce.instance.get('/user')
+    return ApiService.instance.get('/user')
   }
 }

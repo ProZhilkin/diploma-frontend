@@ -1,15 +1,22 @@
 <template>
   <div :class="b()">
     <div :class="b('buttons')">
-      <div :class="b('button')" @click="openAddItemModal">add</div>
+      <div :class="b('button')" v-if="user.is_admin" @click="openAddItemModal">add</div>
       <div :class="b('button')" @click="logout">exit_to_app</div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'home-header',
+  computed: {
+    ...mapState([
+      'user'
+    ])
+  },
   methods: {
     logout () {
       this.$store.commit('SET_TOKEN', null)

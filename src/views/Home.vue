@@ -51,6 +51,7 @@ export default {
   },
   async created () {
     this.youtube = new Youtube(this.youtubeApiKey)
+    await this.$store.dispatch('getUser')
     await this.$store.dispatch('getChannels')
     await this.$store.dispatch('getFeeds')
     await this.$store.dispatch('getVideos')
