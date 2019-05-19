@@ -5,5 +5,8 @@ import routes from './routes'
 Vue.use(Router)
 
 export default new Router({
-  routes: routes
+  routes: routes,
+  scrollBehavior () {
+    return { x: 0, y: 0 }
+  }
 })

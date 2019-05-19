@@ -1,12 +1,16 @@
 <template>
   <div :class="b()">
     <router-view />
+    <Modals />
   </div>
 </template>
 
 <script>
+import Modals from './components/common/Modals'
+
 export default {
-  name: 'app'
+  name: 'app',
+  components: { Modals }
 }
 </script>
 

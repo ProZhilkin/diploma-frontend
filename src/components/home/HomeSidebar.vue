@@ -1,10 +1,10 @@
 <template>
   <div :class="b()">
     <div
-      :class="b('item', { selected: isSelected(item.id) })"
+      :class="b('item', modificator(item.route))"
       v-for="item in items"
       :key="item.id"
-      @click="select(item.id)">
+      @click="go(item.route)">
       <div :class="b('icon')">{{ item.icon }}</div>
       <div :class="b('title')">{{ item.title }}</div>
     </div>
@@ -17,25 +17,33 @@ export default {
   data: () => ({
     items: [{
       id: 1,
+      route: 'content:home',
       icon: 'home',
       title: 'Дом'
     }, {
       id: 2,
+      route: 'content:channels',
       icon: 'ondemand_video',
       title: 'Youtube'
     }, {
       id: 3,
+      route: 'content:feeds',
       icon: 'rss_feed',
       title: 'RSS'
     }],
-    selected: 1
+    selected: null
   }),
+  computed: {
+    routeName () {
+      return this.$route.name
+    }
+  },
   methods: {
-    isSelected (id) {
-      return this.selected === id
+    modificator (routeName) {
+      return { selected: routeName === this.routeName }
     },
-    select (id) {
-      this.selected = id
+    go (routeName) {
+      this.$router.push({ name: routeName })
     }
   }
 }
@@ -47,6 +55,8 @@ export default {
   border-right: 1px solid #20222F;
   color: #fff;
   height: 100%;
+  position: relative;
+  z-index: 1;
   width: $home-sidebar-width;
 
   &__item {
@@ -57,6 +67,7 @@ export default {
     flex-direction: column;
     height: $home-sidebar-width;
     justify-content: center;
+    transition: all $transition-duration;
     width: 100%;
 
     &:hover {

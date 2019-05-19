@@ -1,7 +1,17 @@
 .app {
   align-items: center;
+  background: url('~@/assets/images/background.png') #30323F;
   display: flex;
+  font-size: 14px;
   height: 100vh;
   justify-content: center;
   width: 100vw;
+  user-select: none;
+}
+.custom-modal-body {
+  padding: 0 !important;
+}
+.custom-modal-content {
+  border: unset !important;
+  border-radius: unset !important;
 }

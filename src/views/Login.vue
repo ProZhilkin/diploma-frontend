@@ -1,15 +1,15 @@
 <template>
   <PerfectScrollbar :class="b()">
-    <div :class="b('header')">Регистрация</div>
+    <div :class="b('header')">Авторизация</div>
     <div :class="b('form')">
       <div v-for="(field, index) in fields" :key="index">
         <b-form-group :label="field.label">
           <b-form-input v-model="values[field.name]" :type="field.type" />
         </b-form-group>
       </div>
-      <b-button block variant="primary" @click="register">Зарегистрироваться</b-button>
+      <b-button block variant="primary" @click="login">Войти</b-button>
       <div :class="b('links')">
-        <router-link to="/login">Войти</router-link>
+        <router-link to="/register">Регистрация</router-link>
       </div>
     </div>
   </PerfectScrollbar>
@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'register',
+  name: 'login',
   data: () => ({
     fields: [{
       label: 'Email:',
@@ -27,35 +27,30 @@ export default {
       label: 'Пароль:',
       name: 'password',
       type: 'password'
-    }, {
-      label: 'Имя:',
-      name: 'name',
-      type: 'text'
     }],
     isLoading: false,
     values: {
       email: '',
-      password: '',
-      name: ''
+      password: ''
     }
   }),
   methods: {
-    async register () {
+    async login () {
       this.isLoading = true
       try {
-        await this.$store.dispatch('register', this.values)
-        this.$router.push({ name: 'login' })
+        await this.$store.dispatch('login', this.values)
+        this.$router.push({ name: 'content:home' })
       } catch (error) {
-        alert('Произошла какая-то ошибка.')
+        alert('Логин или пароль введены не верно!')
       }
       this.isLoading = false
-    },
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.register {
+.login {
   background: #fff;
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
   width: $register-width;

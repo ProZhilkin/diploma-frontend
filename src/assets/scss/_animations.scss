@@ -1,0 +1,7 @@
+.slide-enter, .slide-leave-to { margin-left: -100%; }
+.slide-enter-active, .slide-leave-active { transition: margin-left $transition-duration; }
+.slide-enter-to, .slide-leave { margin-left: 0; }
+
+.fade-enter, .fade-leave-to { opacity: 0; }
+.fade-enter-active, .fade-leave-active { transition: opacity $transition-duration; }
+.fade-enter-to, .fade-leave { opacity: 1; }
