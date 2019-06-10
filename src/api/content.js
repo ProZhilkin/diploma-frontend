@@ -1,11 +1,15 @@
 import ApiService from '@/services/api'
 
 export default class {
-  static save (data) {
-    return ApiService.instance.put('/content', data)
+  static saveVk (data) {
+    return ApiService.instance.put('/content/vk', data)
   }
 
-  static getFileUrl (hash, type) {
-    return `${ApiService.baseURL}/content/${type}/${hash}`
+  static saveYoutube (data) {
+    return ApiService.instance.put('/content/youtube', data)
+  }
+
+  static getFileUrl (service, type, value) {
+    return `${ApiService.baseURL}/content/${service}/${type}/${value}`
   }
 }

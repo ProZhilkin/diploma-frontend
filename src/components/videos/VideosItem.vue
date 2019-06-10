@@ -1,6 +1,6 @@
 <template>
   <div :class="b()" @click="openVideoViewModal">
-    <img :class="b('thumbnail')" :src="item.image_medium">
+    <img :class="b('thumbnail')" :src="thumbnail">
     <div :class="b('content')">
       <div :class="b('title')">{{ item.title }}</div>
       <div :class="b('text')" v-html="content"></div>
@@ -27,6 +27,14 @@ export default {
     },
     date () {
       return moment(this.item.date * 1000).format('YYYY-MM-DD HH:mm')
+    },
+    thumbnail () {
+      let keys = ['photo_1280', 'photo_800', 'photo_640', 'photo_320', 'photo_130']
+      let src = ''
+      keys.forEach(key => {
+        if (this.item[key] && !src) src = this.item[key]
+      })
+      return src
     }
   },
   methods: {
@@ -46,9 +54,9 @@ export default {
   flex-direction: column;
 
   &__thumbnail {
-    background: #eee;
+    background: #000;
     border-bottom: 1px solid #ccc;
-    object-fit: cover;
+    object-fit: contain;
     height: 200px;
     width: 100%;
   }

@@ -44,6 +44,7 @@ export default {
   flex-direction: column;
 
   &__thumbnail {
+    background: #000;
     border-bottom: 1px solid #ccc;
     object-fit: contain;
     width: 100%;

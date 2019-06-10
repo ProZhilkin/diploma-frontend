@@ -19,7 +19,8 @@ export default {
   components: { HomeSidebar, HomeMenu, HomeContent },
   data: () => ({
     limit: 50,
-    youtube: null
+    youtube: null,
+    version: '5.95'
   }),
   computed: {
     ...mapState([
@@ -42,9 +43,9 @@ export default {
     },
     videos () {
       this.videos.forEach(async (video) => {
-        const params = { access_token: this.vkApiKey, owner_id: video.owner_id, v: 'V' }
+        const params = { access_token: this.vkApiKey, owner_id: video.owner_id, v: this.version }
         const { data } = await VkApi.getVideos(params)
-        const items = data.response.filter(item => typeof item === 'object')
+        const items = data.response.items.filter(item => typeof item === 'object')
         this.$store.commit('UPDATE_VIDEO', { id: video.id, items: items })
       })
     }

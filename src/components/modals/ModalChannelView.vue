@@ -13,14 +13,20 @@
       <div :class="b('content')">
         <div :class="b('title')" v-html="item.title"></div>
         <div :class="b('description')" v-html="item.description"></div>
-        <b-button @click="download">Скачать</b-button>
-        <template v-if="clicked">
-          <div v-if="isLoaded">
-            <a :href="getFileUrl('audio')">AUDIO</a>
-            <a :href="getFileUrl('video')">VIDEO</a>
-          </div>
-          <b-spinner v-else />
-        </template>
+        <b-button-group :class="b('buttons')">
+          <b-button :disabled="isDisabled" @click="download('video')" variant="primary">
+            <div :class="b('line')">
+              <b-spinner :class="b('spinner')" v-if="isVideoLoading"></b-spinner>
+              <span :class="b('icon')" v-else>videocam</span> Скачать видео
+            </div>
+          </b-button>
+          <b-button :disabled="isDisabled" @click="download('audio')" variant="primary">
+            <div :class="b('line')">
+              <b-spinner :class="b('spinner')" v-if="isAudioLoading"></b-spinner>
+              <span :class="b('icon')" v-else>music_note</span> Скачать аудио
+            </div>
+          </b-button>
+        </b-button-group>
       </div>
     </div>
   </b-modal>
@@ -32,16 +38,17 @@ import ContentApi from '@/api/content'
 export default {
   name: 'modal-channel-view',
   data: () => ({
-    audio: {},
-    clicked: false,
-    embedUrl: 'https://www.youtube.com/embed/',
-    isLoaded: false,
-    video: {}
+    isAudioLoading: false,
+    isVideoLoading: false,
+    embedUrl: 'https://www.youtube.com/embed/'
   }),
   computed: {
     hash () {
       const url = new URL(this.item.url)
       return url.searchParams.get('v')
+    },
+    isDisabled () {
+      return this.isAudioLoading || this.isVideoLoading
     },
     item () {
       return this.modal.item || {}
@@ -56,31 +63,15 @@ export default {
       return this.embedUrl + this.item.id
     }
   },
-  watch: {
-    visible (value) {
-      if (value) return
-      this.clicked = false
-      this.isLoaded = false
-      this.audio = {}
-      this.video = {}
-    }
-  },
   methods: {
-    async download () {
-      this.clicked = true
-      this.isLoaded = false
-      this.audio = await this.$store.dispatch('saveContent', this.getParams('audio'))
-      this.video = await this.$store.dispatch('saveContent', this.getParams('video'))
-      this.isLoaded = true
-    },
-    getFileUrl (type) {
-      return ContentApi.getFileUrl(this.hash, type)
-    },
-    getParams (type) {
-      return {
-        hash: this.hash,
-        type: type
-      }
+    async download (type) {
+      this.isAudioLoading = type === 'audio'
+      this.isVideoLoading = type === 'video'
+      let file = await this.$store.dispatch('saveYoutube', { bitrate: 128, hash: this.item.id, type })
+      let url = ContentApi.getFileUrl('youtube', type, file.hash)
+      location.href = url
+      this.isAudioLoading = false
+      this.isVideoLoading = false
     },
     hide () {
       this.$store.commit('RESET_MODAL')
@@ -105,6 +96,27 @@ export default {
     font-size: 1.3em;
     font-weight: 550;
     margin-bottom: 10px;
+  }
+
+  &__description {
+    margin-bottom: 10px;
+  }
+
+  &__line {
+    align-items: center;
+    display: flex;
+  }
+
+  &__spinner {
+    height: 18px !important;
+    margin-right: 5px;
+    width: 18px !important;
+  }
+
+  &__icon {
+    @extend .material-icons;
+    font-size: 18px;
+    margin-right: 5px;
   }
 }
 </style>

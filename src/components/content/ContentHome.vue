@@ -25,9 +25,9 @@ export default {
   name: 'content-home',
   components: { ChannelsList, FeedsList, VideosList },
   data: () => ({
-    columns: 3,
+    columns: 4,
     currentPage: 1,
-    itemsPerPage: 9
+    itemsPerPage: 12
   }),
   computed: {
     ...mapState([

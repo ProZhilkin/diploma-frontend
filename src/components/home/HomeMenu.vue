@@ -11,7 +11,7 @@
         @click="selectFavorite(favoriteChannel, 'channel')">
         <div :class="b('icon')">ondemand_video</div>
         <div :class="b('title')">{{ favoriteChannel.channel.info.title }}</div>
-        <div :class="b('player')" @click="openPlayerModal(favoriteChannel)">library_music</div>
+        <div :class="b('player')" @click="openPlayerModal(favoriteChannel, 'channel')">library_music</div>
         <div :class="b('remove')" @click.stop="removeChannel(favoriteChannel.channel_id)">close</div>
       </div>
       <div
@@ -30,6 +30,7 @@
         @click="selectFavorite(favoriteVideo, 'video')">
         <div :class="b('icon')">videocam</div>
         <div :class="b('title')">{{ favoriteVideo.video.name }}</div>
+        <div :class="b('player')" @click="openPlayerModal(favoriteVideo, 'video')">library_music</div>
         <div :class="b('remove')" @click.stop="removeVideo(favoriteVideo.video_id)">close</div>
       </div>
       <div :class="b('empty')" v-if="!totalLength">Подписок нет</div>
@@ -87,8 +88,10 @@ export default {
     removeVideo (id) {
       this.$store.dispatch('removeFavoriteVideo', id)
     },
-    openPlayerModal (favorite) {
-      this.$store.commit('SET_MODAL', { name: 'modal-player', favorite })
+    openPlayerModal (favorite, type) {
+      let items = type === 'channel' ? favorite.channel.items : favorite.video.items
+      let platform = type === 'channel' ? 'youtube' : 'vk'
+      this.$store.commit('SET_MODAL', { name: 'modal-player', items, platform })
     },
     selectFavorite (favorite, type) {
       if (this.isDeleting) return

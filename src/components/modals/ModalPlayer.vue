@@ -5,15 +5,14 @@
     title="Музыкальные дорожки"
     :visible="visible"
     @hide="hide">
-    <PerfectScrollbar :class="b()">
-      <audio autoplay ref="player" :src="src"></audio>
-      <div :class="b('item')" v-for="(item, index) in items" :key="index">
-        <b-spinner :class="b('spinner')" v-if="isLoading(item.id)"></b-spinner>
-        <div :class="b('button')" v-else-if="isPlayed(item.id)" @click="pause">pause</div>
-        <div :class="b('button')" v-else @click="load(item)">play_arrow</div>
+    <PerfectScrollbar :class="b('wrapper')">
+      <audio :src="src" autoplay ref="player"></audio>
+      <div :class="b('item')" :key="index" v-for="(item, index) in items">
+        <b-spinner :class="b('spinner')" v-if="states[index] === 'loading'"></b-spinner>
+        <div :class="b('button')" @click="handle(item, index)" v-else>{{ icon(index) }}</div>
         <div :class="b('title')">
-          <div v-html="item.title"></div>
-          <div :class="b('progress')" v-if="isPlayed(item.id)">
+          {{ item.title }}
+          <div :class="b('progress')" v-if="states[index] === 'play'">
             <div :class="b('slider')" :style="sliderStyle"></div>
           </div>
         </div>
@@ -28,27 +27,20 @@ import ContentApi from '@/api/content'
 export default {
   name: 'modal-player',
   data: () => ({
-    audio: {},
     currentTime: 0,
     duration: 0,
-    player: null,
-    playedId: null,
     src: '',
-    states: {}
+    states: []
   }),
   computed: {
-    channel () {
-      return this.favorite.channel || {}
-    },
-    favorite () {
-      return this.modal.favorite || {}
-    },
     items () {
-      const items = this.channel.items || []
-      return items.filter(channel => channel.type === 'video')
+      return this.modal.items
     },
     modal () {
-      return this.$store.getters.modal
+      return this.$store.getters.modal || {}
+    },
+    platform () {
+      return this.modal.platform
     },
     sliderStyle () {
       const percent = this.currentTime * 100 / this.duration
@@ -59,10 +51,11 @@ export default {
     }
   },
   watch: {
+    items (items) {
+      this.states = items.map(item => 'none')
+    },
     visible (value) {
-      if (!value) {
-        this.src = ''
-      }
+      if (!value) this.src = ''
     }
   },
   mounted () {
@@ -72,65 +65,48 @@ export default {
     this.player.addEventListener('timeupdate', () => this.currentTime = this.player.currentTime)
   },
   methods: {
-    async load (item) {
-      const hash = this.getHash(item.url)
-      const type = 'audio'
-      this.setState(item.id, 'loading')
-      try {
-        this.audio = await this.$store.dispatch('saveContent', { hash, type })
-        this.setState(item.id, 'loaded')
-        this.play(item)
-      } catch {
-        this.setState(item.id, false)
-        alert('Ошибка при загрузке аудио')
-      }
-    },
-    async next () {
-      let index = this.items.findIndex(item => item.id === this.playedId) + 1
-      let last = this.items.length - 1
-      if (index > last) return this.pause()
-      let item = this.items[index]
-      await this.load(item)
-      this.play(item)
-    },
-    getFileUrl (item) {
-      const hash = this.getHash(item.url)
-      return ContentApi.getFileUrl(hash, 'audio')
-    },
-    getHash (string) {
-      const url = new URL(string)
-      return url.searchParams.get('v')
-    },
-    getState (id) {
-      return this.states[id] || false
-    },
     hide () {
       this.$store.commit('RESET_MODAL')
     },
-    isUnloaded (id) {
-      return !this.getState(id)
+    icon (index) {
+      return this.states[index] === 'play' ? 'pause' : 'play_arrow'
     },
-    isLoading (id) {
-      return this.getState(id) === 'loading'
+    handle (item, index) {
+      if (this.states[index] === 'play') return this.pause(index)
+      let method = this.platform === 'youtube' ? 'saveYoutube' : (item.platform ? 'saveYoutube' : 'saveVk')
+      this.setState(index, 'loading')
+      this[method](item, index)
     },
-    isLoaded (id) {
-      return this.getState(id) === 'loaded'
+    setState (index, state) {
+      this.$set(this.states, index, state)
     },
-    isPlayed (id) {
-      return this.playedId === id
+    async saveVk (item, index) {
+      let file = await this.$store.dispatch('saveVk', { id: item.id, owner_id: item.owner_id, type: 'audio' })
+      this.setState(index, 'loaded')
+      this.src = ContentApi.getFileUrl('vk', 'audio', file.hash)
+      this.play(index)
     },
-    pause () {
-      this.playedId = null
+    async saveYoutube (item, index) {
+      let hash = item.platform ? item.player.match(/embed\/(.+?)\?/)[1] : item.id
+      let file = await this.$store.dispatch('saveYoutube', { hash, type: 'audio' })
+      this.setState(index, 'loaded')
+      this.src = ContentApi.getFileUrl('youtube', 'audio', file.hash)
+      this.play(index)
+    },
+    next () {
+      let index = this.states.findIndex(state => state === 'play')
+      let lastIndex = this.items.length - 1
+      let next = index > lastIndex ? 0 : index + 1
+      this.handle(this.items[next], next)
+    },
+    pause (index) {
+      this.setState(index, 'pause')
       this.player.pause()
     },
-    play (item) {
-      this.src = ContentApi.getFileUrl(this.getHash(item.url), 'audio')
-      this.playedId = item.id
-      this.promise = this.player.play()
-      if (this.promise !== null) this.promise.catch(() => this.player.play())
-    },
-    setState (id, state) {
-      this.$set(this.states, id, state)
+    play (index) {
+      this.states = this.states.map(state => state === 'play' ? 'pause' : state)
+      this.setState(index, 'play')
+      this.player.play().catch()
     }
   }
 }
@@ -138,11 +114,17 @@ export default {
 
 <style lang="scss">
 .modal-player {
-  max-height: 50vh;
+  &__wrapper {
+    max-height: 50vh;
+  }
 
   &__item {
     display: flex;
-    padding: 5px;
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   &__spinner {
@@ -159,19 +141,20 @@ export default {
     color: #fff;
     cursor: pointer;
     display: flex;
-    font-size: 16px;
+    flex-shrink: 0;
+    font-size: 18px;
     height: 24px;
     justify-content: center;
-    margin-right: 5px;
+    margin-right: 7px;
     width: 24px;
   }
 
   &__title {
-    flex: 1;
     overflow: hidden;
     position: relative;
     text-overflow: ellipsis;
     white-space: nowrap;
+    width: 100%;
   }
 
   &__progress {

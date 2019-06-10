@@ -17,7 +17,7 @@
             </div>
           </b-button>
         </div>
-        <FeedsList :items="getItems(feed)" :limit="4" :columns="4" />
+        <FeedsList :items="getItems(feed)" :limit="5" :columns="5" />
       </div>
     </div>
   </div>

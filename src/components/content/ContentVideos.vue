@@ -17,7 +17,7 @@
             </div>
           </b-button>
         </div>
-        <VideosList :items="getItems(video)" :limit="4" />
+        <VideosList :items="getItems(video)" :columns="5" :limit="5" />
       </div>
     </div>
   </div>

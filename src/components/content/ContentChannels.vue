@@ -17,7 +17,7 @@
             </div>
           </b-button>
         </div>
-        <ChannelsList :items="channel.items" :limit="4" />
+        <ChannelsList :items="channel.items" :columns="5" :limit="5" />
       </div>
     </div>
   </div>

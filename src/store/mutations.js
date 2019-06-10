@@ -14,7 +14,7 @@ export default {
     }
   },
   RESET_MODAL (state) {
-    state.modal = {}
+    state.modal.name = ''
   },
   SELECT_FAVORITE (state, { favorite, type }) {
     state.selectedFavorite = favorite
